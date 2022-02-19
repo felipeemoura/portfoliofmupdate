@@ -1,5 +1,8 @@
-<div class="row">
-    <h4>Lista de Alunos</h4>
+<h4>Lista de Alunos</h4>
+<button onclick="addAluno()" class="btn waves-effect waves-light" name="action">Inserir Novo
+    <i class="material-icons right">send</i>
+  </button>
+<div hidden id="formCrud" class="row">
     <form class="col s12">
         <div class="row">
             <div class="input-field col s12">
@@ -22,6 +25,9 @@
     <button onclick="listarDados()" class="btn waves-effect waves-light" name="action">Listar
         <i class="material-icons right">send</i>
       </button>
+    <button onclick="cancelar()" class="btn waves-effect waves-light" name="action">cancelar
+        <i class="material-icons right">send</i>
+      </button>
 </div>
 
 <ul id="pessoas" class="collection">
@@ -29,8 +35,20 @@
 </ul>
 
 <script>
+    function addAluno() {
+        $('#formCrud').show();
+        $('#pessoas').hide();
+    }
+
+
+    function cancelar() {
+        $('#formCrud').hide();
+        $('#pessoas').show();
+    }
+
+
     function listarDados() {
-        $.getJSON('http://localhost:3000/alunos', function (data, status) {
+        $.getJSON('https://server-api-fm.herokuapp.com/alunos', function (data, status) {
         console.log(data);
         let pessoas = [];
 
@@ -51,8 +69,12 @@
     })
     }
 
+
+    listarDados()
+
+
     function pegaId(id) {
-        $.getJSON(`http://localhost:3000/alunos/${id}`, function (data, status) {
+        $.getJSON(`https://server-api-fm.herokuapp.com/alunos/${id}`, function (data, status) {
             console.log(data)
             $("#inNome").val(data.nome);
             $("#inCurso").val(data.curso);
@@ -70,7 +92,7 @@
             idade: dados[2].value
         }
 
-        $.post("http://localhost:3000/alunos", dadosSalvar, function(result){
+        $.post("https://server-api-fm.herokuapp.com/alunos", dadosSalvar, function(result){
             console.log('os dados foram salvos', result)
         })
 
