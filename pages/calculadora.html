@@ -3,7 +3,7 @@
 <div class="container">
     <div class="row fundo-grey">
         <div class="row div-calculo grey darken-4">
-            <div id="resultCalc" class="display-number">0</div>
+            <div id="resultadoCalc" class="display-number">0</div>
         </div>
         <div class="col s3">
             <a onclick="btnCalc(1)" class="waves-effect btn-calcular grey lighten-1 waves-light btn-large">1</a>
@@ -34,38 +34,116 @@
 
 
 <script>
-    function btnCalc(valor) {
-        var result = $('#resultCalc').html()
 
-        if (valor == 'C') {
-            console.log('passei no c', result)
-            $('#resultCalc').html(0)
-        } else if (result == 0) {
-            console.log('passei no 0', result)
-            $('#resultCalc').html(valor)
-        } else if (valor != '=') {
-            console.log('passei no =', result)
-            result = result + '' + valor
-                // $('#resultCalc').html(result)
-            let arrCalc1 = result.match(/\+/g) ? result.match(/\+/g).length : 0
-            console.log('arrrcal', arrCalc1)
+function returnTipoOperacao(resultado) {
 
-            if (valor != "=" && arrCalc1 == 1) {
-                console.log('passando no novo if')
-                $('#resultCalc').html(result)
-            } else {
-                console.log('passando no novo do else')
-                var resultadoCalc = 0
-                console.log('passando no result', result)
-                if (result.split('+').length >= 2 && result.indexOf('+') > -1) {
-                    console.log('passando no result do if', result)
-                    result = result.split('+')
-                    resultadoCalc = +result[0] + +result[1]
-                    $('#resultCalc').html(resultadoCalc)
-                }
-            }
+let adicao = resultado.match(/\+/g) ? resultado.match(/\+/g).length : 0
+let divisao = resultado.match(/\//g) ? resultado.match(/\//g).length : 0
+let multiplicacao = resultado.match(/\*/g) ? resultado.match(/\*/g).length : 0
+let subtracao = resultado.match(/\-/g) ? resultado.match(/\-/g).length : 0
 
-        }
+if (adicao == 1) {
+    return '+'
+} else if (divisao == 1) {
+    return '/'
+} else if (multiplicacao == 1) {
+    return '*'
+} else if (subtracao == 1 && resultado.indexOf('-')) {
+    return '-'
+} else {
+    return false
+}
+}
 
+
+function returnTermosOperacao(termos) {
+
+let adicao = termos.split('+')
+let subtracao = termos.split('-')
+let multiplicacao = termos.split('*')
+let divisao = termos.split('/')
+
+if (Boolean(adicao[1])) {
+    return adicao
+} else if (Boolean(subtracao[1])) {
+    return subtracao
+} else if (Boolean(multiplicacao[1])) {
+    return multiplicacao
+} else if (Boolean(divisao[1])) {
+    return divisao
+} else {
+    return false
+}
+}
+
+function returnarResultadoOperacao(operador, termos) {
+
+if (operador == '+' && termos) {
+    return parseInt(termos[0]) + parseInt(termos[1])
+} else if (operador == '-' && termos) {
+    return parseInt(termos[0]) - parseInt(termos[1])
+} else if (operador == '*' && termos) {
+    return parseInt(termos[0]) * parseInt(termos[1])
+} else if (operador == '/' && termos) {
+    return parseInt(termos[0]) / parseInt(termos[1])
+} else {
+    return false
+}
+
+}
+
+function addDigito(valorDisplay, digito, operacao) {
+console.log('operação', operacao)
+console.log('sim', valorDisplay.indexOf('-'))
+
+if (valorDisplay == '0') {
+    return digito
+} else if (valorDisplay > '0' && digito == '=') {
+    return valorDisplay
+} else if (operacao && (digito == '+' || digito == '-' || digito == '*' || digito == '/')) {
+    return valorDisplay
+} else if (valorDisplay.indexOf('-') == 0 && (digito == '-' || digito == '*' || digito == '/')){
+    console.log('sim', valorDisplay.indexOf('-'))
+    return valorDisplay
+} else {
+    valorDisplay = valorDisplay + '' + digito;
+    return valorDisplay
+}
+
+}
+
+
+function btnCalc(digito) {
+
+var resultadoFinal = 0
+var displayCalc = $('#resultadoCalc')
+var resultadoCalc = displayCalc.html();
+var operacao = returnTipoOperacao(resultadoCalc)
+var termos = returnTermosOperacao(resultadoCalc)
+
+if (digito == 'C') {
+    displayCalc.html(0)
+}
+else if (digito == '+' || digito == '-' || digito == '*' || digito == '/' || digito == '=') {
+    console.log('digitou o operador', digito)
+    if (displayCalc.html() == '0') {
+        console.log('apertei operador sem valor', digito)
+        displayCalc.html('0')
     }
+    else {
+        if (operacao && termos) {
+            console.log('fazaendo calculo', operacao, termos)
+            resultadoFinal = returnarResultadoOperacao(operacao, termos)
+            displayCalc.html(resultadoFinal)
+        } else {
+            let digitoAdicionado = addDigito(resultadoCalc, digito, operacao)
+            displayCalc.html(digitoAdicionado)
+        }
+    }
+} else {
+    let valorDisplay = addDigito(resultadoCalc, digito, operacao)
+    displayCalc.html(valorDisplay)
+}
+
+}
 </script>
